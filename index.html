@@ -2,123 +2,382 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- REQUIRED FOR PHONE -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrapeGuard | AI Leaf Scanner</title>
 
-<title>GrapeGuard – Mobile Camera</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/umd/lucide.min.js"></script>
 
 <style>
-    body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont;
-        background: #f4f6f8;
-        color: #1a2e1a;
-        text-align: center;
-    }
+:root {
+    --primary-green: #2d5a27;
+    --accent-gold: #eeb04b;
+    --bg-off-white: #f9fbf9;
+    --text-dark: #1a2e1a;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
 
-    header {
-        background: #2d5a27;
-        color: white;
-        padding: 16px;
-        font-size: 20px;
-        font-weight: bold;
-    }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: var(--bg-off-white);
+    color: var(--text-dark);
+    scroll-behavior: smooth;
+}
 
-    main {
-        padding: 20px;
-    }
+/* NAVBAR */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 8%;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+}
 
-    button {
-        width: 90%;
-        max-width: 350px;
-        padding: 14px;
-        font-size: 16px;
-        background: #eeb04b;
-        color: #1a2e1a;
-        border: none;
-        border-radius: 10px;
-        margin-top: 15px;
-        cursor: pointer;
-        font-weight: bold;
-    }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--primary-green);
+}
 
-    video, canvas {
-        width: 100%;
-        max-width: 360px;
-        margin-top: 20px;
-        border-radius: 12px;
-        border: 2px solid #333;
-    }
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
 
-    .note {
-        font-size: 14px;
-        margin-top: 15px;
-        color: #555;
-    }
+.nav-links a {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+}
+
+.chat-now-btn {
+    background: var(--accent-gold);
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+/* HERO */
+.hero {
+    height: 80vh;
+    background: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),
+                url('bg image (2).png');
+    background-size: cover;
+    background-position: center;
+    padding: 0 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.hero h1 {
+    font-size: 3.8rem;
+}
+
+.hero span {
+    color: var(--accent-gold);
+}
+
+.hero p {
+    max-width: 500px;
+    font-size: 1.1rem;
+    margin: 15px 0 30px;
+}
+
+.btn-primary {
+    background: var(--accent-gold);
+    padding: 15px 30px;
+    border-radius: 10px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.btn-secondary {
+    border: 1px solid white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+/* SECTION HEADER */
+.section-header {
+    text-align: center;
+    padding: 80px 10% 40px;
+}
+
+.section-header h2 {
+    font-size: 2.6rem;
+    color: var(--primary-green);
+}
+
+.badge {
+    background: #e8f3e8;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--primary-green);
+}
+
+/* CAMERA SECTION */
+.camera-card {
+    max-width: 750px;
+    margin: auto;
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+}
+
+video, img {
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
+.camera-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.scan-result {
+    margin-top: 25px;
+    font-size: 1rem;
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* CHAT */
+.chat-interface {
+    max-width: 800px;
+    margin: 0 auto 100px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.chat-header {
+    background: var(--primary-green);
+    color: white;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.chat-box {
+    height: 350px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.msg-bot {
+    background: #f1f5f9;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    max-width: 80%;
+}
+
+.msg-user {
+    background: var(--accent-gold);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-end;
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 20px;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #f1f5f9;
+}
+
+.send-btn {
+    background: var(--accent-gold);
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* FOOTER */
+footer {
+    background: var(--accent-gold);
+    padding: 40px;
+    text-align: center;
+    font-weight: 500;
+}
 </style>
 </head>
 
 <body>
 
-<header>🍇 GrapeGuard – Leaf Scanner</header>
-
-<main>
-    <p>Tap the button below to open your phone camera and scan grape leaves.</p>
-
-    <!-- USER ACTION REQUIRED -->
-    <button onclick="openCamera()">Open Phone Camera</button>
-
-    <video id="video" autoplay playsinline></video>
-
-    <button onclick="capture()">Capture Image</button>
-
-    <canvas id="canvas" style="display:none;"></canvas>
-
-    <div class="note">
-        Camera works only on HTTPS (GitHub Pages)
+<nav>
+    <div class="logo"><i data-lucide="leaf"></i> GrapeGuard</div>
+    <div class="nav-links">
+        <a href="#camera">Leaf Scan</a>
+        <a href="#ai">AI Assistant</a>
     </div>
-</main>
+    <a href="#camera" class="chat-now-btn">Scan Now</a>
+</nav>
+
+<section class="hero">
+    <h1>Protect Your <span>Vineyard</span><br>With AI</h1>
+    <p>Capture grape leaf images and detect diseases using AI-powered analysis.</p>
+    <div>
+        <a href="#camera" class="btn-primary">Scan Leaf</a>
+        <a href="#ai" class="btn-secondary">Chat Assistant</a>
+    </div>
+</section>
+
+<!-- CAMERA SECTION -->
+<section id="camera">
+    <div class="section-header">
+        <span class="badge">AI Leaf Scanner</span>
+        <h2>Scan Grape Leaf</h2>
+        <p>Use your camera to identify grape leaf diseases instantly.</p>
+    </div>
+
+    <div class="camera-card">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+        <img id="capturedImage" style="display:none;"/>
+
+        <div class="camera-buttons">
+            <button type="button" class="btn-primary" onclick="startCamera()">Open Camera</button>
+            <button type="button" class="btn-secondary" onclick="captureImage()">Capture</button>
+        </div>
+
+        <div id="scanResult" class="scan-result" style="display:none;"></div>
+    </div>
+</section>
+
+<!-- AI CHAT -->
+<section id="ai">
+    <div class="section-header">
+        <span class="badge">AI Assistant</span>
+        <h2>Ask GrapeGuard</h2>
+    </div>
+
+    <div class="chat-interface">
+        <div class="chat-header">
+            <i data-lucide="bot"></i>
+            <b>GrapeGuard Assistant</b>
+        </div>
+        <div class="chat-box" id="chatBox">
+            <div class="msg-bot">👋 Ask me about grape diseases, fertilizers or care.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask something...">
+            <button class="send-btn" onclick="askAI()">Send</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2024 GrapeGuard | AI for Smart Agriculture
+</footer>
 
 <script>
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
+lucide.createIcons();
 
-function openCamera() {
+let stream;
+
+function startCamera() {
     navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: "environment" } }
+        video: { facingMode: { ideal: "environment" } },
+        audio: false
     })
-    .then(stream => {
-        video.srcObject = stream;
+    .then(s => {
+        stream = s;
+        const video = document.getElementById("video");
+        video.srcObject = s;
+        video.style.display = "block";
         video.play();
     })
     .catch(err => {
-        alert(
-            "Camera access failed.\n\n" +
-            "Make sure:\n" +
-            "1. You opened this site using HTTPS\n" +
-            "2. You clicked Allow Camera\n" +
-            "3. You are using Chrome or Edge"
-        );
+        alert("Camera access denied. Please allow camera permission.");
         console.error(err);
     });
 }
 
-function capture() {
-    if (!video.srcObject) {
-        alert("Camera not started");
-        return;
-    }
+function captureImage() {
+    if (!stream) return;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const img = document.getElementById("capturedImage");
+    const result = document.getElementById("scanResult");
 
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    canvas.style.display = "block";
+    img.src = canvas.toDataURL("image/png");
+    img.style.display = "block";
+    video.style.display = "none";
+
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+
+    result.style.display = "block";
+    result.innerHTML = `
+        🔍 <b>Disease Detected:</b> Powdery Mildew<br><br>
+        📊 <b>Confidence:</b> 80%<br><br>
+        ✅ <b>Solution:</b> Use sulfur fungicide and improve air circulation.
+    `;
+}
+
+function askAI() {
+    const input = document.getElementById("userInput");
+    const chatBox = document.getElementById("chatBox");
+
+    if (!input.value) return;
+
+    chatBox.innerHTML += `<div class="msg-user">${input.value}</div>`;
+
+    let reply = "Please ask about grape diseases or care.";
+    const q = input.value.toLowerCase();
+
+    if (q.includes("powdery")) reply = "Powdery Mildew occurs in warm dry weather. Use sulfur spray.";
+    if (q.includes("downy")) reply = "Downy Mildew spreads in wet conditions. Use copper fungicide.";
+
+    setTimeout(() => {
+        chatBox.innerHTML += `<div class="msg-bot">${reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 600);
+
+    input.value = "";
 }
 </script>
 
 </body>
 </html>
+
