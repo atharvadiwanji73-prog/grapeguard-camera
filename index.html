@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- REQUIRED FOR PHONE -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GrapeGuard – Mobile Camera</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont;
+        background: #f4f6f8;
+        color: #1a2e1a;
+        text-align: center;
+    }
+
+    header {
+        background: #2d5a27;
+        color: white;
+        padding: 16px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    button {
+        width: 90%;
+        max-width: 350px;
+        padding: 14px;
+        font-size: 16px;
+        background: #eeb04b;
+        color: #1a2e1a;
+        border: none;
+        border-radius: 10px;
+        margin-top: 15px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    video, canvas {
+        width: 100%;
+        max-width: 360px;
+        margin-top: 20px;
+        border-radius: 12px;
+        border: 2px solid #333;
+    }
+
+    .note {
+        font-size: 14px;
+        margin-top: 15px;
+        color: #555;
+    }
+</style>
+</head>
+
+<body>
+
+<header>🍇 GrapeGuard – Leaf Scanner</header>
+
+<main>
+    <p>Tap the button below to open your phone camera and scan grape leaves.</p>
+
+    <!-- USER ACTION REQUIRED -->
+    <button onclick="openCamera()">Open Phone Camera</button>
+
+    <video id="video" autoplay playsinline></video>
+
+    <button onclick="capture()">Capture Image</button>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <div class="note">
+        Camera works only on HTTPS (GitHub Pages)
+    </div>
+</main>
+
+<script>
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+
+function openCamera() {
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }
+    })
+    .then(stream => {
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch(err => {
+        alert(
+            "Camera access failed.\n\n" +
+            "Make sure:\n" +
+            "1. You opened this site using HTTPS\n" +
+            "2. You clicked Allow Camera\n" +
+            "3. You are using Chrome or Edge"
+        );
+        console.error(err);
+    });
+}
+
+function capture() {
+    if (!video.srcObject) {
+        alert("Camera not started");
+        return;
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    canvas.style.display = "block";
+}
+</script>
+
+</body>
+</html>
