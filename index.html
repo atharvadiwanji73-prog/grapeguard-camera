@@ -21,7 +21,6 @@ body {
     margin: 0;
     background: var(--bg-off-white);
     color: var(--text-dark);
-    scroll-behavior: smooth;
 }
 
 /* NAVBAR */
@@ -55,7 +54,6 @@ nav {
 .nav-links a {
     text-decoration: none;
     color: #555;
-    font-weight: 500;
 }
 
 .chat-now-btn {
@@ -81,47 +79,23 @@ nav {
     color: white;
 }
 
-.hero h1 {
-    font-size: 3.8rem;
-}
+.hero h1 { font-size: 3.5rem; }
+.hero span { color: var(--accent-gold); }
 
-.hero span {
-    color: var(--accent-gold);
-}
-
-.hero p {
-    max-width: 500px;
-    font-size: 1.1rem;
-    margin: 15px 0 30px;
-}
-
-.btn-primary {
-    background: var(--accent-gold);
+.btn-primary, .btn-secondary {
     padding: 15px 30px;
     border-radius: 10px;
-    color: var(--text-dark);
     text-decoration: none;
     font-weight: bold;
-    margin-right: 15px;
 }
 
-.btn-secondary {
-    border: 1px solid white;
-    padding: 15px 30px;
-    border-radius: 10px;
-    color: white;
-    text-decoration: none;
-}
+.btn-primary { background: var(--accent-gold); color: var(--text-dark); }
+.btn-secondary { border: 1px solid white; color: white; }
 
-/* SECTION HEADER */
+/* SECTIONS */
 .section-header {
     text-align: center;
     padding: 80px 10% 40px;
-}
-
-.section-header h2 {
-    font-size: 2.6rem;
-    color: var(--primary-green);
 }
 
 .badge {
@@ -133,7 +107,7 @@ nav {
     color: var(--primary-green);
 }
 
-/* CAMERA SECTION */
+/* CAMERA */
 .camera-card {
     max-width: 750px;
     margin: auto;
@@ -160,7 +134,6 @@ video, img {
 
 .scan-result {
     margin-top: 25px;
-    font-size: 1rem;
     background: #f1f5f9;
     padding: 20px;
     border-radius: 15px;
@@ -184,7 +157,7 @@ video, img {
 }
 
 .chat-box {
-    height: 350px;
+    height: 300px;
     padding: 20px;
     overflow-y: auto;
 }
@@ -194,7 +167,6 @@ video, img {
     padding: 12px;
     border-radius: 12px;
     margin-bottom: 10px;
-    max-width: 80%;
 }
 
 .msg-user {
@@ -202,7 +174,6 @@ video, img {
     padding: 12px;
     border-radius: 12px;
     margin-bottom: 10px;
-    max-width: 70%;
     align-self: flex-end;
 }
 
@@ -233,7 +204,6 @@ footer {
     background: var(--accent-gold);
     padding: 40px;
     text-align: center;
-    font-weight: 500;
 }
 </style>
 </head>
@@ -263,17 +233,20 @@ footer {
     <div class="section-header">
         <span class="badge">AI Leaf Scanner</span>
         <h2>Scan Grape Leaf</h2>
-        <p>Use your camera to identify grape leaf diseases instantly.</p>
     </div>
 
     <div class="camera-card">
-        <video id="video" autoplay playsinline muted></video>
+        <video id="video" autoplay muted playsinline style="display:none;"></video>
         <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
         <img id="capturedImage" style="display:none;"/>
+
+        <!-- FALLBACK (ALWAYS WORKS ON PHONE) -->
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none">
 
         <div class="camera-buttons">
             <button type="button" class="btn-primary" onclick="startCamera()">Open Camera</button>
             <button type="button" class="btn-secondary" onclick="captureImage()">Capture</button>
+            <button type="button" class="btn-secondary" onclick="useFallback()">Upload Image</button>
         </div>
 
         <div id="scanResult" class="scan-result" style="display:none;"></div>
@@ -293,7 +266,7 @@ footer {
             <b>GrapeGuard Assistant</b>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="msg-bot">👋 Ask me about grape diseases, fertilizers or care.</div>
+            <div class="msg-bot">👋 Ask me about grape diseases or care.</div>
         </div>
         <div class="chat-input-area">
             <input type="text" id="userInput" placeholder="Ask something...">
@@ -312,21 +285,19 @@ lucide.createIcons();
 let stream;
 
 function startCamera() {
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
-        audio: false
-    })
-    .then(s => {
-        stream = s;
-        const video = document.getElementById("video");
-        video.srcObject = s;
-        video.style.display = "block";
-        video.play();
-    })
-    .catch(err => {
-        alert("Camera access denied. Please allow camera permission.");
-        console.error(err);
-    });
+    const video = document.getElementById("video");
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(s => {
+            stream = s;
+            video.srcObject = s;
+            video.style.display = "block";
+            return video.play();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Live camera failed. Use Upload Image instead.");
+        });
 }
 
 function captureImage() {
@@ -335,20 +306,34 @@ function captureImage() {
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const img = document.getElementById("capturedImage");
-    const result = document.getElementById("scanResult");
 
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
     img.src = canvas.toDataURL("image/png");
     img.style.display = "block";
     video.style.display = "none";
 
-    stream.getTracks().forEach(track => track.stop());
+    stream.getTracks().forEach(t => t.stop());
     stream = null;
 
-    result.style.display = "block";
-    result.innerHTML = `
+    showResult();
+}
+
+function useFallback() {
+    document.getElementById("fileInput").click();
+}
+
+document.getElementById("fileInput").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = document.getElementById("capturedImage");
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
+    showResult();
+});
+
+function showResult() {
+    document.getElementById("scanResult").style.display = "block";
+    document.getElementById("scanResult").innerHTML = `
         🔍 <b>Disease Detected:</b> Powdery Mildew<br><br>
         📊 <b>Confidence:</b> 80%<br><br>
         ✅ <b>Solution:</b> Use sulfur fungicide and improve air circulation.
@@ -358,26 +343,16 @@ function captureImage() {
 function askAI() {
     const input = document.getElementById("userInput");
     const chatBox = document.getElementById("chatBox");
-
     if (!input.value) return;
 
     chatBox.innerHTML += `<div class="msg-user">${input.value}</div>`;
-
-    let reply = "Please ask about grape diseases or care.";
-    const q = input.value.toLowerCase();
-
-    if (q.includes("powdery")) reply = "Powdery Mildew occurs in warm dry weather. Use sulfur spray.";
-    if (q.includes("downy")) reply = "Downy Mildew spreads in wet conditions. Use copper fungicide.";
-
     setTimeout(() => {
-        chatBox.innerHTML += `<div class="msg-bot">${reply}</div>`;
+        chatBox.innerHTML += `<div class="msg-bot">Please consult an expert for treatment.</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
-    }, 600);
-
+    }, 500);
     input.value = "";
 }
 </script>
 
 </body>
 </html>
-
